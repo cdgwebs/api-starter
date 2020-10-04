@@ -7,6 +7,10 @@ require('dotenv').config();
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 
+const mongoose = require('mongoose');
+
+const userRouter = require('./routes/user.route');
+
 const cookieSession = require('cookie-session');
 
 const app = express();
@@ -16,6 +20,7 @@ const port = 3000;
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+app.use('/user', userRouter);
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -57,13 +62,25 @@ app.use(function(err, req, res, next) {
     res.render('error');
 });
 
-app.listen(3000, () => {
+app.listen(port, () => {
     // Just to log the root path
     console.log(`Home directory: ${path.join(__dirname, './static')}`);
     console.log(`Express server listening on port ${port}`);
     console.log(`Production Mongo Connection ${process.env.PRODUCTION_DB_DSN}`);
     console.log(`Development Mongo Connection ${process.env.DEVELOPMENT_DB_DSN}`);
     console.log(`Test Mongo Connection ${process.env.TEST_DB_DSN}`);
+});
+
+const uri = `${process.env.TEST_DB_DSN}`;
+
+mongoose.connect(uri, {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useUnifiedTopology: true,
+});
+const connection = mongoose.connection;
+connection.once('open', () => {
+    console.log('MongoDB database connection established successfully');
 });
 
 module.exports = () => {
