@@ -1,7 +1,7 @@
 // user.route.js
 
 const router = require('express').Router();
-let User = require('./user.model');
+let User = require('./user.model').default;
 
 var express = require('express');
 var bodyParser = require('body-parser');
